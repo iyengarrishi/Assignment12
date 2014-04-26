@@ -14,9 +14,6 @@ function loadData(UNEMPDATA) {
 
 	var gDataTable = new google.visualization.DataTable();
 
-	//When I add columns, the first parameter is the datatype in that column
-	//The second parameter is the name of the column
-
 	gDataTable.addColumn('string', UNEMPDATA.columns[0]);
 	gDataTable.addColumn('number', UNEMPDATA.columns[1]);
 
@@ -35,41 +32,39 @@ function loadData(UNEMPDATA) {
 
 }
 
-//Create a click handler using e
+//Create a click handler e
 function changeData(e){
 	var tableID = e.target.id;
 	console.log(tableID);
-	var tableArray = tableID.split("_");//This separates the years from the dates
-	var tableYear = tableArray[1];//This identifies the year we are selecting on click
-	$.get(tableURL+"'"+tableYear+"-01-01'"+tableKey, loadData, "json");//This get request changes the data according to the button clicked
+	var tableArray = tableID.split("_");//Splitting the year from the div ID in the HTML
+	var tableYear = tableArray[1];//Select the year in the div ID, which is the second element of the array
+	//Replace specific year in the get request with the variables created, to change the data on click
+	$.get(tableURL+"'"+tableYear+"-01-01'"+tableKey, loadData, "json");
 	
-	//I notice at this point that my page loads blank and the chart appears only when I click
-	//So I need to set a default year that will open on the page
 	
-	//Bring in History JS to split the URL and change it
+	//Use History JS to change the URL with each click. The first string changes the display tab, the second changes the URL
 	History.pushState({year:tableYear}, "Unemployment from -"+tableYear, "?year="+tableYear);
 }
 
 function loadGoogle() {
 	
 	var yearURL = History.getState().cleanUrl;
-	var tableArray = yearURL.split("?"); //Splitting the URL on the question mark
+	var tableArray = yearURL.split("?"); //Split the URL on the question mark
 	
-	var defaultYear = "1980";
+	var displayYear = "1980"; //I have named my default year "displayYear"
 
+	//Determine whether there is anything in the URL or not, if there is, then split on the equal sign
+	//This will enable the URL to be shared 
 	
 	if(tableArray.length > 1){
-		//get the query string, break it on equals and 
-		defaultYear = tableArray[1].split("=")[1];
+		
+		displayYear = tableArray[1].split("=")[1];
 	}
 	
 	
 	$(".btn-success").on("click", changeData);
-
-	console.log("Loaded Google Viz");
-
-	//Inside of the get, we see the filename, the function name and the file type
-	//Instead of loading data from a static JSON file, I will load it from a Google Fusion Table
+	
+	$("#year_"+displayYear).click();
 
 
 	
